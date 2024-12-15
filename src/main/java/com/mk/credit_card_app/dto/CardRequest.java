@@ -1,10 +1,13 @@
 package com.mk.credit_card_app.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record CardRequest(@NotBlank(message = "firstName is required") String firstName,
                           String lastName,
+                          @Email(message = "invalid email")
+                          String email,
                           @NotBlank(message = "password is required") @Pattern(regexp =
                                   "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
                                   message = "password")

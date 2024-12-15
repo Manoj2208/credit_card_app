@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,7 @@ public class CreditCard {
     private String cardNo;
     private String expiry;
     private String cvv;
+    @CreationTimestamp
     private LocalDateTime createdAt;
     @OneToOne
     private User user;
