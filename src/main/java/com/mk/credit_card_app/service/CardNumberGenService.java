@@ -19,43 +19,29 @@ public class CardNumberGenService {
         this.creditCardRepository = creditCardRepository;
     }
 
-    /**
-     * Generate a unique 12-digit secure card number.
-     *
-     * @return A unique 12-digit card number.
-     */
     public String generateUniqueCardNumber() {
         String cardNumber;
         do {
             cardNumber = generateCardNumber();
-        } while (isCardNumberExists(cardNumber)); // Ensure uniqueness
+        } while (isCardNumberExists(cardNumber));
+
+        // Encrypt only once before returning/saving
         return AESEncryptDecryptor.encrypt(cardNumber);
     }
 
-    /**
-     * Generates a random 12-digit card number.
-     *
-     * @return A 12-digit card number.
-     */
     private String generateCardNumber() {
         StringBuilder cardNumber = new StringBuilder(CARD_NUMBER_LENGTH);
         for (int i = 0; i < CARD_NUMBER_LENGTH; i++) {
-            int digit = secureRandom.nextInt(10); // Random digit between 0 and 9
+            int digit = secureRandom.nextInt(10);
             cardNumber.append(digit);
         }
         return cardNumber.toString();
     }
 
-    /**
-     * Checks if the card number already exists in the database or in-memory set.
-     *
-     * @param cardNumber The card number to check.
-     * @return True if the card number exists, otherwise false.
-     */
     private boolean isCardNumberExists(String cardNumber) {
-        return creditCardRepository.existsByCardNo(AESEncryptDecryptor.decrypt(cardNumber));
-
+        // Do not decrypt here; store encrypted versions in the database
+        return creditCardRepository.existsByCardNo(cardNumber);
     }
-
 }
+
 

@@ -34,24 +34,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ApiResponse applyCreditCard(CardRequest cardRequest) {
-        Optional.ofNullable(userRepository.findByPan(cardRequest.pan())).ifPresentOrElse(user -> {
-            log.error("User with pan already exist");
+        userRepository.findByPan(cardRequest.pan()).ifPresent(user -> {
+            log.error("User with pan already exists");
             throw new UserConflictsException();
-        }, () -> {
-            User user = userMapper(cardRequest);
-            CreditCard creditCard = creditCardMapper(user);
-            log.info("User registered for the credit card");
-            userRepository.save(user);
-            log.info("Credit card applied for the user");
-            creditCardRepository.save(creditCard);
         });
-        return ApiResponse.builder().httpStatus(SuccessConstant.CARD_APPLIED_CODE).
-                message(SuccessConstant.CARD_APPLIED_MSG).build();
+
+        User user = userMapper(cardRequest);
+        CreditCard creditCard = creditCardMapper(user);
+
+        log.info("User registered for the credit card");
+        userRepository.save(user);
+        log.info("Credit card applied for the user");
+        creditCardRepository.save(creditCard);
+
+        return ApiResponse.builder()
+                .httpStatus(SuccessConstant.CARD_APPLIED_CODE)
+                .message(SuccessConstant.CARD_APPLIED_MSG)
+                .build();
     }
 
     @Override
     public CardResponse getCardByUserId(String userId) {
-        return Optional.ofNullable(userRepository.findById(userId))
+        return Optional.of(userRepository.findById(userId))
                 .map(user -> {
                     CreditCard creditCard = creditCardRepository.findByUser(user.get());
                     return CardResponse.builder()
@@ -67,7 +71,7 @@ public class UserServiceImpl implements UserService {
                 })
                 .orElseThrow(() -> {
                     log.error(String.format("User: %s not found", userId));
-                    throw new UserNotFoundException();
+                    return new UserNotFoundException();
                 });
     }
 
@@ -76,8 +80,8 @@ public class UserServiceImpl implements UserService {
     public CreditCards getCards() {
         List<CardResponse> cardResponses = creditCardRepository.findAll().stream().map(card -> CardResponse.builder()
                 .expiry(card.getExpiry()).cvv(card.getCvv()).cardNumber(AESEncryptDecryptor
-                .decrypt(card.getCardNo())).cardHolder(card.getUser().getFirstName() + " " + card.getUser().
-                getLastName()).build()).toList();
+                        .decrypt(card.getCardNo())).cardHolder(card.getUser().getFirstName() + " " + card.getUser().
+                        getLastName()).build()).toList();
         return CreditCards.builder().cards(cardResponses).response(ApiResponse.builder().message(SuccessConstant.
                 CARD_DETAILS_FOUND_MESSAGE).httpStatus(SuccessConstant.CARD_DETAILS_FOUND_CODE).build()).build();
     }

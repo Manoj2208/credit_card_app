@@ -10,7 +10,7 @@ public record CardRequest(@NotBlank(message = "firstName is required") String fi
                           String email,
                           @NotBlank(message = "password is required") @Pattern(regexp =
                                   "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-                                  message = "password")
+                                  message = "password should match the standard format")
                           String password,
                           @NotBlank(message = "Pan card number is required.") @Pattern(regexp =
                                   "^[A-Z]{5}[\\d]{4}[A-Z]$", message = "Invalid pan number") String pan,

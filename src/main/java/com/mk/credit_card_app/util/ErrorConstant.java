@@ -5,7 +5,7 @@ public class ErrorConstant {
     public static final String RESOURCE_CONFLICT_MESSAGE="Card request Already Applied for the user";
 
     public static final String RESOURCE_NOT_FOUND_CODE="4004";
-    public static final String RESOURCE_NOT_FOUND_MSG="User with id not found";
+    public static final String RESOURCE_NOT_FOUND_MSG="User not found";
 
     public static final String INVALID_CREDENTIALS_CODE="4000";
     public static final String INVALID_CREDENTIALS_MSG="Invalid credentials";
