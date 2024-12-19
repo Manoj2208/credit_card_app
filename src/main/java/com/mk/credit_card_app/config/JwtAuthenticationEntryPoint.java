@@ -1,5 +1,6 @@
 package com.mk.credit_card_app.config;
 
+import com.mk.credit_card_app.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -17,5 +18,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = response.getWriter();
         writer.println("Access Denied !! " + authException.getMessage());
+        throw new UnauthorizedException();
     }
 }

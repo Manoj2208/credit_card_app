@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping("/credit-cards/{userId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<CardResponse> cardDetailsForUser(@PathVariable String userId) {
+    public ResponseEntity<CreditCards> cardDetailsForUser(@PathVariable String userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getCardByUserId(userId));
     }
 

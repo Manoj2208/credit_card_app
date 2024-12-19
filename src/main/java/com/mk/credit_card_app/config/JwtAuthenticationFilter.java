@@ -1,5 +1,6 @@
 package com.mk.credit_card_app.config;
 
+import com.mk.credit_card_app.util.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -38,12 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String requestHeader = request.getHeader("Authorization");
+        String requestHeader = request.getHeader(Constants.HEADER_STRING);
 
         String username = null;
         String token = null;
 
-        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+        if (requestHeader != null && requestHeader.startsWith(Constants.TOKEN_PREFIX)) {
             token = requestHeader.substring(7);
 
             try {
