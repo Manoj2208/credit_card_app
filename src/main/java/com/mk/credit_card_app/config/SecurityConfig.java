@@ -51,9 +51,4 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Autowired
-    public void globalUserDetails(AuthenticationManagerBuilder builder) throws Exception {
-        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
-
 }
