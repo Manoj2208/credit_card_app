@@ -3,7 +3,9 @@ package com.mk.credit_card_app.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 
+@Builder
 public record CardRequest(@NotBlank(message = "firstName is required") String firstName,
                           String lastName,
                           @Email(message = "invalid email")

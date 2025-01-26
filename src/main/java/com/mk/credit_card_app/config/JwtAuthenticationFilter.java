@@ -1,5 +1,6 @@
 package com.mk.credit_card_app.config;
 
+import com.mk.credit_card_app.util.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -7,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,28 +24,29 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String requestHeader = request.getHeader("Authorization");
+        String requestHeader = request.getHeader(Constants.HEADER_STRING);
 
         String username = null;
         String token = null;
 
-        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+        if (requestHeader != null && requestHeader.startsWith(Constants.TOKEN_PREFIX)) {
             token = requestHeader.substring(7);
 
             try {
@@ -66,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtTokenUtil.validateToken(token, userDetails)) {
+            if (Boolean.TRUE.equals(jwtTokenUtil.validateToken(token, userDetails))) {
                 // Extract roles dynamically from JWT claims
                 Claims claims = jwtTokenUtil.getAllClaims(token);
                 List<SimpleGrantedAuthority> authorities = extractAuthorities(claims);
@@ -94,8 +97,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .stream()
                     .map(role -> {
                         // Check if role is a map and extract the "authority" key
-                        if (role instanceof Map) {
-                            Map<?, ?> roleMap = (Map<?, ?>) role;
+                        if (role instanceof Map<?, ?> roleMap) {
                             Object authority = roleMap.get("authority");
                             if (authority != null) {
                                 // Log the authority to debug
@@ -109,8 +111,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         }
                         return null;
                     })
-                    .filter(role -> role != null)  // Filter out any null values
-                    .collect(Collectors.toList());
+                    .filter(Objects::nonNull)  // Filter out any null values
+                    .toList();
         }
         return Collections.emptyList();
     }

@@ -1,9 +1,6 @@
 package com.mk.credit_card_app.service;
 
-import com.mk.credit_card_app.dto.ApiResponse;
-import com.mk.credit_card_app.dto.CardRequest;
-import com.mk.credit_card_app.dto.CardResponse;
-import com.mk.credit_card_app.dto.CreditCards;
+import com.mk.credit_card_app.dto.*;
 import com.mk.credit_card_app.entity.CreditCard;
 import com.mk.credit_card_app.entity.Role;
 import com.mk.credit_card_app.entity.User;
@@ -18,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final CardNumberGenService cardNumberGenService;
 
     @Override
+    @Transactional
     public ApiResponse applyCreditCard(CardRequest cardRequest) {
         userRepository.findByPan(cardRequest.pan()).ifPresent(user -> {
             log.error("User with pan already exists");
@@ -55,14 +54,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CardResponse getCardByUserId(String userId) {
-        return Optional.of(userRepository.findById(userId))
+        return userRepository.findById(userId)
                 .map(user -> {
-                    CreditCard creditCard = creditCardRepository.findByUser(user.get());
+                    CreditCard creditCard = creditCardRepository.findByUser(user);
                     return CardResponse.builder()
-                            .expiry(creditCard.getExpiry())
-                            .cvv(creditCard.getCvv())
-                            .cardHolder(user.get().getFirstName() + " " + user.get().getLastName())
-                            .cardNumber(AESEncryptDecryptor.decrypt(creditCard.getCardNo()))
+                            .card(Card.builder().expiry(creditCard.getExpiry())
+                                    .cvv(creditCard.getCvv())
+                                    .cardHolder(user.getFirstName() + " " + user.getLastName())
+                                    .cardNumber(AESEncryptDecryptor.decrypt(creditCard.getCardNo())).build())
                             .response(ApiResponse.builder()
                                     .httpStatus(SuccessConstant.CARD_DETAILS_FOUND_CODE)
                                     .message(SuccessConstant.CARD_DETAILS_FOUND_MESSAGE)
@@ -78,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CreditCards getCards() {
-        List<CardResponse> cardResponses = creditCardRepository.findAll().stream().map(card -> CardResponse.builder()
+        List<Card> cardResponses = creditCardRepository.findAll().stream().map(card -> Card.builder()
                 .expiry(card.getExpiry()).cvv(card.getCvv()).cardNumber(AESEncryptDecryptor
                         .decrypt(card.getCardNo())).cardHolder(card.getUser().getFirstName() + " " + card.getUser().
                         getLastName()).build()).toList();

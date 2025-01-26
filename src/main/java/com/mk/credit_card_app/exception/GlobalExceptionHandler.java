@@ -46,16 +46,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     protected ResponseEntity<ErrorResponse> handleUserNotException(InvalidCredentialsException
                                                                            invalidCredentialsException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder().code(invalidCredentialsException.getCode()).message
                         (invalidCredentialsException.getMessage()).build());
     }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    protected ResponseEntity<ErrorResponse> handleUserNotException(UnauthorizedException unauthorizedException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.builder().code(unauthorizedException.getCode()).message(unauthorizedException.
-                        getMessage()).build());
-    }
-
 }

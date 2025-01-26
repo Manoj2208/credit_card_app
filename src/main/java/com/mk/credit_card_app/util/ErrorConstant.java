@@ -1,5 +1,9 @@
 package com.mk.credit_card_app.util;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorConstant {
     public static final String RESOURCE_CONFLICT_CODE="4009";
     public static final String RESOURCE_CONFLICT_MESSAGE="Card request Already Applied for the user";
