@@ -9,12 +9,27 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
+/**
+ * Configuration class for customizing the OpenAPI (Swagger) documentation.
+ * <p>
+ * This configuration defines API metadata and sets up JWT Bearer authentication
+ * for secured endpoints in Swagger UI using OpenAPI 3.0 specification.
+ * </p>
+ */
 @Configuration
 public class OpenApi30Configuration {
 
+    /**
+     * Customizes the OpenAPI specification for the Credit Card API.
+     * Adds API metadata (title, version, description) and configures
+     * the JWT bearer authentication scheme.
+     *
+     * @return an {@link OpenAPI} object configured for the application
+     */
     @Bean
     public OpenAPI customizeOpenAPI() {
         final String securitySchemeName = "bearerAuth";
+
         return new OpenAPI()
                 .info(new Info()
                         .title("Credit Card API")
