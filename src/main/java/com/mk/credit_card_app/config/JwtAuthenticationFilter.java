@@ -25,16 +25,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Filter that intercepts incoming HTTP requests and validates the JWT token (if present) in the Authorization header.
+ * <p>
+ * If the token is valid, it sets the authentication in the Spring Security context with the user's details and roles.
+ * This filter ensures that every request is only processed once per request lifecycle.
+ * </p>
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-
     private final JwtTokenUtil jwtTokenUtil;
-
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Filters incoming requests and performs JWT token validation and authentication.
+     * <p>
+     * It extracts the token from the Authorization header, validates it, and sets up the Spring Security context.
+     * </p>
+     *
+     * @param request     the current HTTP request
+     * @param response    the current HTTP response
+     * @param filterChain the chain of filters to pass the request/response to
+     * @throws ServletException if filtering fails
+     * @throws IOException      if an input or output error occurs
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -88,6 +105,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Extracts user roles (authorities) from JWT claims.
+     * Supports roles stored either as a list of strings or as a list of maps or string with an "authority" key.
+     *
+     * @param claims the JWT claims from which to extract roles
+     * @return a list of {@link SimpleGrantedAuthority} extracted from the claims
+     */
     private List<SimpleGrantedAuthority> extractAuthorities(Claims claims) {
         Object scopes = claims.get("scopes");
         if (scopes instanceof List<?>) {
@@ -98,7 +122,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         if (role instanceof Map<?, ?> roleMap) {
                             Object authority = roleMap.get("authority");
                             if (authority != null) {
-                                // Log the authority to debug
                                 log.debug("Extracted authority from map: {}", authority.toString());
                                 return new SimpleGrantedAuthority("ROLE_" + authority.toString());
                             }
@@ -114,5 +137,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return Collections.emptyList();
     }
-
 }
