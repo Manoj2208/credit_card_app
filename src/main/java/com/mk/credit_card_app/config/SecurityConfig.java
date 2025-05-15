@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -26,6 +27,9 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationEntryPoint point;
 
+    @Autowired
+    private KeycloakRoleConverter keycloakRoleConverter;
+
     /**
      * Defines the password encoder bean using BCrypt hashing algorithm.
      *
@@ -35,6 +39,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
     /**
      * Configures the security filter chain for HTTP requests.
@@ -50,13 +55,17 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(keycloakRoleConverter);
+        
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/v1/credit-cards/**").authenticated()
                         .anyRequest().permitAll()
                 )
-                .oauth2ResourceServer(authServer->authServer.jwt(Customizer.withDefaults())
+                .oauth2ResourceServer(authServer->authServer
+                        .jwt(jwt->jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
                         .authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();

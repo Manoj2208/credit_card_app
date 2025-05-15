@@ -42,6 +42,8 @@ public class UserController {
      * @param userId the unique identifier of the user
      * @return the credit card details associated with the user
      */
+
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/credit-cards/{userId}")
     public ResponseEntity<CardResponse> cardDetailsForUser(@PathVariable String userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getCardByUserId(userId));
@@ -52,6 +54,7 @@ public class UserController {
      *
      * @return a list of all credit card applications
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/credit-cards")
     public ResponseEntity<CreditCards> cardDetails() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getCards());
