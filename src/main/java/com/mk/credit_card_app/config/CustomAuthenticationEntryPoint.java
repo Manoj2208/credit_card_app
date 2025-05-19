@@ -29,10 +29,10 @@ public class CustomAuthenticationEntryPoint implements org.springframework.secur
     /**
      * Handles the unauthorized error response when authentication fails.
      *
-     * @param request       the {@link HttpServletRequest} that resulted in the authentication exception.
-     * @param response      the {@link HttpServletResponse} to which the error response will be written.
-     * @param authException the exception that caused the invocation.
-     * @throws IOException if an input or output error occurs while writing the response.
+     * @param request
+     * @param response
+     * @param authException
+     * @throws IOException
      */
     @Override
     public void commence(HttpServletRequest request,

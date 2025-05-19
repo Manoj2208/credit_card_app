@@ -1,9 +1,8 @@
 package com.mk.credit_card_app.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,18 +16,19 @@ import org.springframework.security.web.SecurityFilterChain;
  * Configuration class for Spring Security settings.
  * <p>
  * This config sets up authentication and authorization filters,
- * disables CSRF and CORS, and registers JWT-based stateless security.
+ * disables CSRF and CORS, and registers Oauth2-based stateless security.
+ * Uses Keycloak as Auth Server
  * </p>
  */
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private CustomAuthenticationEntryPoint point;
+    private final CustomAuthenticationEntryPoint point;
 
-    @Autowired
-    private KeycloakRoleConverter keycloakRoleConverter;
+    private final KeycloakRoleConverter keycloakRoleConverter;
+
 
     /**
      * Defines the password encoder bean using BCrypt hashing algorithm.
@@ -57,7 +57,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(keycloakRoleConverter);
-        
+
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
