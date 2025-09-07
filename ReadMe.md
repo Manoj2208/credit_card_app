@@ -1,6 +1,6 @@
 # 💳 Credit Card Application
 
-A Spring Boot RESTful service that allows users to apply for credit cards and view card details, with role-based access control using JWT authentication.
+A Spring Boot RESTful service that allows users to apply for credit cards and view card details, with role-based access control using KeyCloak as Auth Server.
 
 ---
 
@@ -25,17 +25,18 @@ A Spring Boot RESTful service that allows users to apply for credit cards and vi
 
 - **Java 17**
 - **Spring Boot 3.x**
-- **Spring Security with JWT**
+- **Spring Security with Oauth2 Resource Server**
 - **Spring Data JPA**
 - **MySQL**
 - **Lombok**
 - **Maven**
+- **KeyCloak** (Auth server running in  docker engine)
 
 ---
 
 ## 🔐 Authentication and Roles
 
-- JWT-based authentication.
+- Oauth2 with keycloak as AuthServer
 - Two roles supported:
     - `USER`
     - `ADMIN`

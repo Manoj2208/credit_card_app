@@ -10,6 +10,13 @@ spring:
 
   main:
     allow-circular-references: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9192/realms/mk-dev
+          jwk-set-uri: http://localhost:9192/realms/mk-dev/protocol/openid-connect/certs
+
 
 logging:
   file:

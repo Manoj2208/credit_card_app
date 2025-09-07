@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,17 +22,17 @@ import java.io.IOException;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint implements org.springframework.security.web.AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
 
     /**
      * Handles the unauthorized error response when authentication fails.
      *
-     * @param request       the {@link HttpServletRequest} that resulted in the authentication exception.
-     * @param response      the {@link HttpServletResponse} to which the error response will be written.
-     * @param authException the exception that caused the invocation.
-     * @throws IOException if an input or output error occurs while writing the response.
+     * @param request
+     * @param response
+     * @param authException
+     * @throws IOException
      */
     @Override
     public void commence(HttpServletRequest request,
